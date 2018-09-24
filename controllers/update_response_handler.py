@@ -6,9 +6,8 @@ from config.database import database
 
 class UpdateResponseHandler(tornado.web.RequestHandler):
 
-    def post(self):
+    def put(self):
         conn = None
-        resources = {}
         try:
             params = database()
             conn = psycopg2.connect(**params)

@@ -6,6 +6,7 @@ import tornado.web
 from config.create_table import createTables
 from controllers.hello_handler import HelloHandler
 from controllers.save_response_handler import SaveResponseHandler
+from controllers.update_response_handler import UpdateResponseHandler
 
 def main():
 
@@ -19,6 +20,7 @@ def main():
     application = tornado.web.Application([
         (r"/", HelloHandler),
         (r"/save", SaveResponseHandler),
+        (r"/update", UpdateResponseHandler),
     ], **settings)
 
     http_server = tornado.httpserver.HTTPServer(application)

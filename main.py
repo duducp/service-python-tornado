@@ -4,6 +4,7 @@ import tornado.ioloop
 import tornado.web
 
 from controllers.hello_handler import HelloHandler
+from config.create_table import createTables
 
 def main():
 
@@ -24,4 +25,5 @@ def main():
     tornado.ioloop.IOLoop.instance().start()
 
 if __name__ == '__main__':
+    createTables()
     main()

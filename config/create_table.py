@@ -14,7 +14,7 @@ def createTables():
             CREATE TABLE IF NOT EXISTS tb_tj_sp (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
-                response TEXT NOT NULL,
+                response TEXT,
                 date DATE NOT NULL
             )
         """)

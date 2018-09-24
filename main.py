@@ -3,13 +3,14 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 
-from controllers.hello_handler import HelloHandler
 from config.create_table import createTables
+from controllers.hello_handler import HelloHandler
+from controllers.save_response_handler import SaveResponseHandler
 
 def main():
 
     settings = dict(
-        xsrf_cookies=True,
+        xsrf_cookies=False,
         autoreload=True,
         gzip=True,
         debug=True
@@ -17,6 +18,7 @@ def main():
 
     application = tornado.web.Application([
         (r"/", HelloHandler),
+        (r"/save", SaveResponseHandler),
     ], **settings)
 
     http_server = tornado.httpserver.HTTPServer(application)

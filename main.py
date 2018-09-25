@@ -24,7 +24,7 @@ def main():
     ], **settings)
 
     http_server = tornado.httpserver.HTTPServer(application)
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 8000))
     http_server.listen(port)
     print('Listening on http://localhost:%i' % port)
     tornado.ioloop.IOLoop.instance().start()

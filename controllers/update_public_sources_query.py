@@ -16,7 +16,6 @@ class UpdatePublicSourcesQuery(CorsHandler):
         self.write({'status: ': status, 'error: ': error, 'msg: ': message})
 
     def patch(self, _id):
-        print('ok')
         try:
             body = json.loads(self.request.body.decode("utf-8"))
             if body:

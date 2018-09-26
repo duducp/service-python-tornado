@@ -15,7 +15,7 @@ def createTables():
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 response TEXT,
-                date DATE NOT NULL
+                date TIMESTAMP NOT NULL
             )
         """)
 

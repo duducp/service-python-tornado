@@ -1,3 +1,4 @@
+import pika
 import psycopg2
 import datetime
 import json
@@ -7,11 +8,31 @@ from http import HTTPStatus
 from handler.cors import CorsHandler
 from config.database import database
 
+from controllers.rabbitmq import addRabbitmq
+
 
 class PublicSourcesQuery(CorsHandler):
     def send_response(self, message, error=False, status=200):
         self.set_status(status)
         self.write({'status: ': status, 'error: ': error, 'msg: ': message})
+
+    def addRabbitmq(self, obj):
+        try:
+            # Conecta
+            connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+            channel = connection.channel()
+
+            # Cria a fila
+            channel.queue_declare(queue='request-tj-sp')
+
+            message_rabbit_mq = json.dumps(obj)
+
+            # envia a mensagem para a fila
+            channel.basic_publish(exchange='', routing_key='request-tj-sp', body=message_rabbit_mq)
+
+            connection.close()
+        except Exception as error:
+            return self.send_response('Erro ao adicionar objeto a lista', False, HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def post(self):
         try:
@@ -39,10 +60,10 @@ class PublicSourcesQuery(CorsHandler):
                         'name': body.get('name'),
                         'id': int(cur.fetchone()[0])
                     }
+                    self.addRabbitmq(obj)
 
                     cur.close()
 
-                    # self.addRow(obj)
                     return self.send_response('Dado inserido na fila com sucesso!', False, 200)
 
                 except (Exception, psycopg2.DatabaseError) as error:

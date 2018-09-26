@@ -5,8 +5,8 @@ import tornado.web
 
 from config.create_table import createTables
 from controllers.hello import HelloHandler
-from controllers.publicSourcesQuery import PublicSourcesQuery
-from controllers.update_response_handler import UpdateResponseHandler
+from controllers.post_public_sources_query import PostPublicSourcesQuery
+from controllers.update_public_sources_query import UpdatePublicSourcesQuery
 from handler.notfound import NotFoundHandler
 
 
@@ -20,8 +20,8 @@ def main():
 
     application = tornado.web.Application([
         (r'/', HelloHandler),
-        (r'/save', PublicSourcesQuery),
-        (r'/update', UpdateResponseHandler),
+        (r'/save', PostPublicSourcesQuery),
+        (r'/update/([0-9]+)', UpdatePublicSourcesQuery),
         (r'/.*', NotFoundHandler),
     ], **settings)
 

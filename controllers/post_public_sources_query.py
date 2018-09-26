@@ -11,7 +11,7 @@ from config.database import database
 from controllers.rabbitmq import addRabbitmq
 
 
-class PublicSourcesQuery(CorsHandler):
+class PostPublicSourcesQuery(CorsHandler):
     def send_response(self, message, error=False, status=200):
         self.set_status(status)
         self.write({'status: ': status, 'error: ': error, 'msg: ': message})

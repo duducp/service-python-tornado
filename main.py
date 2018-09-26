@@ -4,12 +4,13 @@ import tornado.ioloop
 import tornado.web
 
 from config.create_table import createTables
-from controllers.hello_handler import HelloHandler
-from controllers.save_response_handler import SaveResponseHandler
+from controllers.hello import HelloHandler
+from controllers.publicSourcesQuery import PublicSourcesQuery
 from controllers.update_response_handler import UpdateResponseHandler
+from handler.notfound import NotFoundHandler
+
 
 def main():
-
     settings = dict(
         xsrf_cookies=False,
         autoreload=True,
@@ -18,9 +19,10 @@ def main():
     )
 
     application = tornado.web.Application([
-        (r"/", HelloHandler),
-        (r"/save", SaveResponseHandler),
-        (r"/update", UpdateResponseHandler),
+        (r'/', HelloHandler),
+        (r'/save', PublicSourcesQuery),
+        (r'/update', UpdateResponseHandler),
+        (r'/.*', NotFoundHandler),
     ], **settings)
 
     http_server = tornado.httpserver.HTTPServer(application)

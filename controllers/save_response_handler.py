@@ -4,6 +4,10 @@ import psycopg2
 import datetime
 import json
 import pika
+import _thread
+
+import time
+from random import randrange
 
 from config.database import database
 
@@ -43,6 +47,30 @@ class SaveResponseHandler(tornado.web.RequestHandler):
         except (Exception, psycopg2.DatabaseError) as error:
             self.write({'error: ': True, 'msg: ': error})
 
+
+    def callbackGetRow(self, channel, method, header, body):
+        print(" [x] Received %r" % body)
+        time.sleep(randrange(0, 5))
+        channel.basic_ack(delivery_tag=method.delivery_tag)
+
+    def getRow(self):
+        try:
+            # Conecta
+            connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+            channel = connection.channel()
+
+            # Cria a fila
+            channel.queue_declare(queue='request-tj-sp')  # depois mudar para response
+
+            # número de mensagens a ser envia por vez
+            channel.basic_qos(prefetch_count=1)
+
+            channel.basic_consume(self.callbackGetRow, queue='request-tj-sp')  # depois mudar para response
+
+            channel.start_consuming()
+        except (Exception, psycopg2.DatabaseError) as error:
+            self.write({'error: ': True, 'msg: ': error})
+
     def post(self):
         conn = None
         try:
@@ -68,13 +96,15 @@ class SaveResponseHandler(tornado.web.RequestHandler):
                 'id': int(cur.fetchone()[0])
             }
 
+            cur.close()
+
             try:
                 self.addRow(obj)
                 self.send_response({'error': False, 'msg': 'Dado inserido na fila com sucesso!'})
+
+                # self.getRow()
             except (Exception) as error:
                 self.write({'error: ': True, 'msg: ': error})
-            finally:
-                cur.close()
 
         except (Exception, psycopg2.DatabaseError) as error:
             self.write({'error: ': True, 'msg: ': error})

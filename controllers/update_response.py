@@ -2,7 +2,7 @@ import json
 import psycopg2
 
 from json import JSONDecodeError
-from config.database import database
+from app.database import database
 
 
 def update(data):

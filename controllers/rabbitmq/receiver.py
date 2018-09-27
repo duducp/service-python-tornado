@@ -1,22 +1,18 @@
-#!/usr/bin/env python
-import json
+import config
 import pika
 import time
 from random import randrange
 
-from controllers.update import update
-
-
-def connect():
-    global connection
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-
-    global channel
-    channel = connection.channel()
-    print(' [*] Serviço estabaleceu conexão com RabbitMQ')
+from controllers.update_response import update
 
 
 def receiver():
+    global connection
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=config.HOST))
+
+    channel = connection.channel()
+    print(' [*] Serviço estabaleceu conexão com RabbitMQ')
+
     # define o nome da fila
     channel.queue_declare(queue='response')
 
@@ -33,13 +29,15 @@ def receiver():
 def callback_receiver(ch, method, properties, body):
     time.sleep(randrange(0, 5))
     ch.basic_ack(delivery_tag=method.delivery_tag)
-
     update(body)
+
+
+def run():
+    receiver()
 
 
 if __name__ == '__main__':
     try:
-        connect()
         receiver()
     except KeyboardInterrupt:
         connection.close()

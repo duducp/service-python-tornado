@@ -6,7 +6,7 @@ import json
 from json import JSONDecodeError
 from http import HTTPStatus
 from handler.cors import CorsHandler
-from config.database import database
+from app.database import database
 
 from controllers.rabbitmq import addRabbitmq
 

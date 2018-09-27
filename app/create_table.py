@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import psycopg2
-from config.database import database
+from app.database import database
 
 def createTables():
     conn = None

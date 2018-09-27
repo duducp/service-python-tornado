@@ -3,7 +3,7 @@ import json
 
 from http import HTTPStatus
 from json import JSONDecodeError
-from config.database import database
+from app.database import database
 from handler.cors import CorsHandler
 
 

@@ -1,7 +1,7 @@
 import json
 import psycopg2
-from json import JSONDecodeError
 
+from json import JSONDecodeError
 from config.database import database
 
 

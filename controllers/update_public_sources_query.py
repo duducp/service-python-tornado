@@ -1,10 +1,7 @@
-from http import HTTPStatus
-
-import tornado.web
-import tornado.escape
 import psycopg2
 import json
 
+from http import HTTPStatus
 from json import JSONDecodeError
 from config.database import database
 from handler.cors import CorsHandler

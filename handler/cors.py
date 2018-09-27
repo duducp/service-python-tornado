@@ -13,6 +13,5 @@ class CorsHandler(web.RequestHandler):
         self.set_header('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Origin, Access-Control-Allow-Headers, X-Requested-By, Access-Control-Allow-Methods')
         self.set_header("X-XSS-Protection", "1; mode=block")
 
-    def options(self, key):
-        self.set_status(204)
-        self.finish()
+    def options(self):
+        pass

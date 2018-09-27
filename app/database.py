@@ -1,8 +1,11 @@
+from app import config
+
+
 def database():
     return {
-        "database": "pg_cedro",
-        "user": "postgres",
-        "password": "edinei6",
-        "host": "localhost",
-        "port": 5432
+        "database": config.DB_DATABASE,
+        "user": config.DB_USER,
+        "password": config.DB_PASSWORD,
+        "host": config.DB_HOST,
+        "port": config.DB_PORT
     }

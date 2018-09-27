@@ -1,4 +1,5 @@
-import config
+from app import config
+
 import pika
 import time
 from random import randrange
@@ -8,7 +9,7 @@ from controllers.update_response import update
 
 def receiver():
     global connection
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=config.HOST))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=config.APP_HOST))
 
     channel = connection.channel()
     print(' [*] Serviço estabaleceu conexão com RabbitMQ')

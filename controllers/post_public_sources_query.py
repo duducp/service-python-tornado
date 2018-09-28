@@ -12,9 +12,9 @@ from app.database import database
 
 
 class PostPublicSourcesQuery(CorsHandler):
-    def send_response(self, message, error=False, status=200):
+    def send_response(self, message, data=None, error=False, status=200):
         self.set_status(status)
-        self.write({'status: ': status, 'error: ': error, 'msg: ': message})
+        self.write({'status: ': status, 'error: ': error, 'msg: ': message, 'data': data})
 
     def send_to_rabbitmq(self, obj):
         try:
@@ -38,7 +38,7 @@ class PostPublicSourcesQuery(CorsHandler):
 
             connection.close()
         except Exception as error:
-            return self.send_response('Erro ao adicionar objeto a fila', False, HTTPStatus.INTERNAL_SERVER_ERROR)
+            return self.send_response('Erro ao adicionar objeto a fila', error, False, HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def post(self):
         try:
@@ -50,7 +50,7 @@ class PostPublicSourcesQuery(CorsHandler):
                 date = datetime.datetime.now()
 
                 if not name:
-                    return self.send_response('Por favor informe o NOME', False, HTTPStatus.BAD_REQUEST)
+                    return self.send_response('Por favor informe o NOME', '', False, HTTPStatus.BAD_REQUEST)
 
                 conn = None
                 try:
@@ -70,15 +70,15 @@ class PostPublicSourcesQuery(CorsHandler):
 
                     cur.close()
 
-                    return self.send_response('Dado inserido na fila com sucesso!', False, 200)
+                    return self.send_response('Dado inserido na fila com sucesso!', obj, False, 200)
 
                 except (Exception, psycopg2.DatabaseError) as error:
-                    return self.send_response(error, True, HTTPStatus.INTERNAL_SERVER_ERROR)
+                    return self.send_response('', error, True, HTTPStatus.INTERNAL_SERVER_ERROR)
                 finally:
                     if conn is not None:
                         conn.close()
             else:
-                return self.send_response('Nenhum dado foi fornecido', True, HTTPStatus.BAD_REQUEST)
+                return self.send_response('Nenhum dado foi fornecido', '', True, HTTPStatus.BAD_REQUEST)
 
         except JSONDecodeError as error:
-            return self.send_response('Os dados informados não é do tipo JSON válido', True, HTTPStatus.BAD_REQUEST)
+            return self.send_response('Os dados informados não é do tipo JSON válido', error, True, HTTPStatus.BAD_REQUEST)

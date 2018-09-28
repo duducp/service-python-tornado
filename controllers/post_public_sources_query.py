@@ -8,8 +8,6 @@ from http import HTTPStatus
 from handler.cors import CorsHandler
 from app.database import database
 
-from controllers.rabbitmq import addRabbitmq
-
 
 class PostPublicSourcesQuery(CorsHandler):
     def send_response(self, message, error=False, status=200):

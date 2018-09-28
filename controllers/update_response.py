@@ -2,12 +2,17 @@ import json
 import psycopg2
 
 from json import JSONDecodeError
+
+from tornado.websocket import WebSocketHandler
+
 from app.database import database
+from handler.ws import WebSocket
 
 
 def update(data):
     try:
         body = json.loads(data)
+        print(body)
 
         if body:
             response = body.get('response')
@@ -26,6 +31,9 @@ def update(data):
                 cur.execute(query, (response, _id))
                 conn.commit()
                 cur.close()
+
+                # socket = WebSocket()
+                # socket.send_message('opaa')
 
                 print('O id {} foi atualizado com sucesso'.format(_id))
 

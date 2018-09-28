@@ -2,7 +2,7 @@ from http import HTTPStatus
 from handler.cors import CorsHandler
 
 
-class NotFoundHandler(CorsHandler):
+class Error404(CorsHandler):
     def get(self):
         self.set_status(HTTPStatus.NOT_FOUND)
         self.write({'error: ': True, 'msg: ': 'Rota não encontrada'})

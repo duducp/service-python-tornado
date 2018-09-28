@@ -1,33 +1,45 @@
-import os
-import tornado.httpserver
-import tornado.ioloop
-import tornado.web
+from app import config
+from app.create_table import createTables
 
-from config.create_table import createTables
-from controllers.hello_handler import HelloHandler
-from controllers.save_response_handler import SaveResponseHandler
-from controllers.update_response_handler import UpdateResponseHandler
+from tornado.web import Application
+from tornado.ioloop import IOLoop
+
+from controllers.get_public_sources_query import GetPublicSourcesQuery
+from controllers.post_public_sources_query import PostPublicSourcesQuery
+from controllers.rabbitmq.pika_client import PikaClient
+from controllers.update_public_sources_query import UpdatePublicSourcesQuery
+from handler.error404 import Error404
+from handler.ws import WebSocket
+
+
+class App(Application):
+    def __init__(self):
+        handlers = [
+            (r'/ws', WebSocket),
+            (r'/busca/([0-9]+)', GetPublicSourcesQuery),
+            (r'/save', PostPublicSourcesQuery),
+            (r'/update/([0-9]+)', UpdatePublicSourcesQuery),
+            (r'/.*', Error404),
+        ]
+
+        Application.__init__(self, handlers)
+
 
 def main():
+    try:
+        # Start Tornado
+        application = App()
+        application.pika = PikaClient()
+        application.listen(config.TORNADO_PORT, config.TORNADO_HOST)
+        print(' [*] Serviço rodando no domínio http://{}:{}'.format(config.TORNADO_HOST, config.TORNADO_PORT))
 
-    settings = dict(
-        xsrf_cookies=False,
-        autoreload=True,
-        gzip=True,
-        debug=True
-    )
+        # Start IO/Event loop
+        ioloop = IOLoop.instance()
+        ioloop.add_timeout(config.IOLOOP_TIMEOUT, application.pika.connect)
+        ioloop.start()
+    except KeyboardInterrupt:
+        print('stop')
 
-    application = tornado.web.Application([
-        (r"/", HelloHandler),
-        (r"/save", SaveResponseHandler),
-        (r"/update", UpdateResponseHandler),
-    ], **settings)
-
-    http_server = tornado.httpserver.HTTPServer(application)
-    port = int(os.environ.get("PORT", 8000))
-    http_server.listen(port)
-    print('Listening on http://localhost:%i' % port)
-    tornado.ioloop.IOLoop.instance().start()
 
 if __name__ == '__main__':
     createTables()

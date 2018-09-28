@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import psycopg2
-from config.database import database
+from app.database import database
 
 def createTables():
     conn = None
@@ -15,7 +15,7 @@ def createTables():
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 response TEXT,
-                date DATE NOT NULL
+                date TIMESTAMP NOT NULL
             )
         """)
 

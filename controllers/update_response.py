@@ -2,11 +2,7 @@ import json
 import psycopg2
 
 from json import JSONDecodeError
-
-from tornado.websocket import WebSocketHandler
-
 from app.database import database
-from handler.ws import WebSocket
 
 
 def update(data):
@@ -31,13 +27,10 @@ def update(data):
                 conn.commit()
                 cur.close()
 
-                # socket = WebSocket()
-                # socket.send_message('opaa')
-
                 print('O id {} foi atualizado com sucesso'.format(_id))
 
             except (Exception, psycopg2.DatabaseError) as error:
-                print('Erro ao conectar com o banco de dados')
+                print('Erro ao conectar com o banco de dados: {} '.format(error))
             finally:
                 if conn is not None:
                     conn.close()

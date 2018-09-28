@@ -3,6 +3,8 @@ import psycopg2
 import datetime
 import json
 
+from app import config
+
 from json import JSONDecodeError
 from http import HTTPStatus
 from handler.cors import CorsHandler
@@ -14,23 +16,29 @@ class PostPublicSourcesQuery(CorsHandler):
         self.set_status(status)
         self.write({'status: ': status, 'error: ': error, 'msg: ': message})
 
-    def addRabbitmq(self, obj):
+    def send_to_rabbitmq(self, obj):
         try:
-            # Conecta
-            connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+            _queue = 'request-tj-sp'
+
+            # conecta ao rabbitmq
+            credentials = pika.PlainCredentials(config.RMQ_USER, config.RMQ_PASSWORD)
+            param = pika.ConnectionParameters(host=config.RMQ_HOST, credentials=credentials)
+
+            connection = pika.BlockingConnection(param)
             channel = connection.channel()
 
-            # Cria a fila
-            channel.queue_declare(queue='request-tj-sp')
+            # cria a fila
+            channel.queue_declare(queue=_queue)
 
+            # tratamento da mensagem
             message_rabbit_mq = json.dumps(obj)
 
             # envia a mensagem para a fila
-            channel.basic_publish(exchange='', routing_key='request-tj-sp', body=message_rabbit_mq)
+            channel.basic_publish(exchange='', routing_key=_queue, body=message_rabbit_mq)
 
             connection.close()
         except Exception as error:
-            return self.send_response('Erro ao adicionar objeto a lista', False, HTTPStatus.INTERNAL_SERVER_ERROR)
+            return self.send_response('Erro ao adicionar objeto a fila', False, HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def post(self):
         try:
@@ -58,7 +66,7 @@ class PostPublicSourcesQuery(CorsHandler):
                         'name': body.get('name'),
                         'id': int(cur.fetchone()[0])
                     }
-                    self.addRabbitmq(obj)
+                    self.send_to_rabbitmq(obj)
 
                     cur.close()
 

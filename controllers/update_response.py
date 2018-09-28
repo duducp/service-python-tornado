@@ -12,7 +12,6 @@ from handler.ws import WebSocket
 def update(data):
     try:
         body = json.loads(data)
-        print(body)
 
         if body:
             response = body.get('response')

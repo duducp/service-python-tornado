@@ -73,7 +73,7 @@ class PostPublicSourcesQuery(CorsHandler):
                     return self.send_response('Dado inserido na fila com sucesso!', obj, False, 200)
 
                 except (Exception, psycopg2.DatabaseError) as error:
-                    return self.send_response('', error, True, HTTPStatus.INTERNAL_SERVER_ERROR)
+                    return self.send_response('', str(error), True, HTTPStatus.INTERNAL_SERVER_ERROR)
                 finally:
                     if conn is not None:
                         conn.close()
@@ -81,4 +81,4 @@ class PostPublicSourcesQuery(CorsHandler):
                 return self.send_response('Nenhum dado foi fornecido', '', True, HTTPStatus.BAD_REQUEST)
 
         except JSONDecodeError as error:
-            return self.send_response('Os dados informados não é do tipo JSON válido', error, True, HTTPStatus.BAD_REQUEST)
+            return self.send_response('Os dados informados não é do tipo JSON válido', str(error), True, HTTPStatus.BAD_REQUEST)

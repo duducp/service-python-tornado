@@ -8,9 +8,9 @@ from handler.cors import CorsHandler
 
 
 class UpdatePublicSourcesQuery(CorsHandler):
-    def send_response(self, message, error=False, status=200):
+    def send_response(self, message, data=None, error=False, status=200):
         self.set_status(status)
-        self.write({'status: ': status, 'error: ': error, 'msg: ': message})
+        self.write({'status: ': status, 'error: ': error, 'msg: ': message, 'data': data})
 
     def patch(self, _id):
         try:
@@ -19,7 +19,7 @@ class UpdatePublicSourcesQuery(CorsHandler):
                 response = body.get('response', '')
 
                 if not response:
-                    return self.send_response('Por favor informe a RESPONSE', False, HTTPStatus.BAD_REQUEST)
+                    return self.send_response('Por favor informe a RESPONSE', '', False, HTTPStatus.BAD_REQUEST)
 
                 conn = None
                 try:
@@ -32,15 +32,15 @@ class UpdatePublicSourcesQuery(CorsHandler):
                     conn.commit()
                     cur.close()
 
-                    return self.send_response('Dado atualizado com sucesso', False, 200)
+                    return self.send_response('Dado atualizado com sucesso', '', False, 200)
 
                 except (Exception, psycopg2.DatabaseError) as error:
-                    return self.send_response(error, True, HTTPStatus.INTERNAL_SERVER_ERROR)
+                    return self.send_response('', str(error), True, HTTPStatus.INTERNAL_SERVER_ERROR)
                 finally:
                     if conn is not None:
                         conn.close()
             else:
-                return self.send_response('Nenhum dado foi fornecido', True, HTTPStatus.BAD_REQUEST)
+                return self.send_response('Nenhum dado foi fornecido', '', True, HTTPStatus.BAD_REQUEST)
 
         except JSONDecodeError as error:
-            return self.send_response('Os dados informados não é do tipo JSON válido', True, HTTPStatus.BAD_REQUEST)
+            return self.send_response('Os dados informados não é do tipo JSON válido', '', True, HTTPStatus.BAD_REQUEST)

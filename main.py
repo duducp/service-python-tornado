@@ -4,6 +4,7 @@ from app.create_table import createTables
 from tornado.web import Application
 from tornado.ioloop import IOLoop
 
+from controllers.get_public_sources_query import GetPublicSourcesQuery
 from controllers.post_public_sources_query import PostPublicSourcesQuery
 from controllers.rabbitmq.pika_client import PikaClient
 from controllers.update_public_sources_query import UpdatePublicSourcesQuery
@@ -15,6 +16,7 @@ class App(Application):
     def __init__(self):
         handlers = [
             (r'/ws', WebSocket),
+            (r'/busca/([0-9]+)', GetPublicSourcesQuery),
             (r'/save', PostPublicSourcesQuery),
             (r'/update/([0-9]+)', UpdatePublicSourcesQuery),
             (r'/.*', Error404),

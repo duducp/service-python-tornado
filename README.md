@@ -6,7 +6,7 @@ Esse serviço é reponsável por:
 - gravar no banco de dados PostGre o nome da pessoa
 - inserir na fila "request-tj-sp" o ID e o NOME da pessoa em forma de json
 - ouvir a fila "response" para poder capturar os dados da pesquisa que vem do terceiro serviço
-- atualizar no banco de dados a resposta que está na fila "request"
+- atualizar no banco de dados a resposta que está na fila "response"
 
 ## Como utilizar
 Após o clone do projeto você deve instalar os pacotes necessários. Para isso rode o comando abaixo no terminal:
